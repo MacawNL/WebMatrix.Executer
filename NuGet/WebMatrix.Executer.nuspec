@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package>
+  <metadata>
+    <id>WebMatrix.Executer</id>
+    <version>1.0.0.0</version>
+    <authors>Serge van den Oever [Macaw]</authors>
+	<owners>Serge van den Oever [Macaw]</owners>
+    <description>
+      WebMatrix.Executer provides a library that can be included in your own baked
+      WebMatrix extension to execute applications and PowerShell scripts, send
+      the output in realtime to a WebMatrix output pane, and parse the output for
+      errors and warnings that are displayed in a WebMatrix errors &amp; warnings pane
+      with just a few lines of code.
+    </description>
+    <summary>
+       Simply create WebMatrix 2 extensions that execute commands, capture output and parse for errors and warnings.
+    </summary>
+	<licenseUrl>http://macawnl.github.com/WebMatrix.Executer/</licenseUrl>
+	<projectUrl>http://macawnl.github.com/WebMatrix.Executer/</projectUrl>
+	<requireLicenseAcceptance>false</requireLicenseAcceptance>
+	<tags>WebMatrix</tags>
+  </metadata>
+  <files>
+    <file src="Tools\**" target="Tools" />
+	<file src="Content\**\*.*" target="Content" />
+	<file src="readme.txt" target="readme.txt" />
+  </files>
+</package>
