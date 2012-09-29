@@ -1,4 +1,6 @@
+Website with documentation: [http://macawnl.github.com/WebMatrix.Executer/](http://macawnl.github.com/WebMatrix.Executer/)
 
+NuGet package: [http://nuget.org/packages/WebMatrix.Executer](http://nuget.org/packages/WebMatrix.Executer)
 
 # WebMatrix.Executer
 
