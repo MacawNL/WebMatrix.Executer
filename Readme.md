@@ -1,5 +1,3 @@
-Website with documentation: [http://macawnl.github.com/WebMatrix.Executer/](http://macawnl.github.com/WebMatrix.Executer/)
-
 NuGet package: [http://nuget.org/packages/WebMatrix.Executer](http://nuget.org/packages/WebMatrix.Executer)
 
 # WebMatrix.Executer
@@ -250,7 +248,56 @@ and parsed for errors and warnings.
 `Write`, `WriteLine`: Write output to the Output pane.
 
 `Initialize`: Initialize the executer system. Called by the 
-`ExecuterFactory.GetExecuter()` method. Not for use by extension developer.
+`ExecuterFactory.GetExecuter()` method with the parameters
+given to `GetExecuter()`. Not for use by the extension developer.
 
-`InitializeTabs`: Initialze the tabs for the executer system. also called by
-`ExecuterFactory.GetExecuter()` method. Not for use by extension developer.
+`InitializeTabs`: Initialize the tabs for the executer system. Called by the
+`ExecuterFactory.GetExecuter()` method. Not for use by the extension developer.
+
+## Error format for parsing errors
+
+Any line containing the word 'error' or 'warning' is reported. We don't only parse output from Visual Studio/MSBuild,
+but also from external tools that don't use the Visual Studio/MsBuild guidelines for reporting errors and warnings.
+If the word 'error' or 'warning' is used in a filename, it should not be reported.
+
+*If the word 'error' or 'warning' is used in a special construction, an ignore list with
+regular expressions can be specified, for example to exclude the line 'On [0-9]+ lines an error or warning occured'.* 
+(Not implemented yet, plumbing is available however)
+
+If an error or warning complies to the Visual Studio/MSBuild error format, additional information is returned about the file,
+line number where the error or warning occured.
+
+Most important is that filenames containing the word error or warning are not reported as false positives.
+The following characters are assumed to be common filename characters: a-zA-Z0-9_-.
+
+Simple regular expression user for error/warning parsing:
+
+    static private readonly Regex simpleMessageExpression = new Regex
+    (
+        String.Format(@"(?<CATEGORY>({0}error{0}|{0}warning{0}))", excludeCommonFilenameCharacters),
+        RegexOptions.IgnoreCase
+    );
+	
+MSBuild compliant error/warning parsing:
+
+    static private readonly Regex originCategoryCodeTextExpression = new Regex
+    (
+        // Beginning of line and any amount of whitespace.
+        @"^\s*"
+        // Match a [optional project number prefix 'ddd>'], single letter + colon + remaining filename, or
+        // string with no colon followed by a colon.
+        + @"(((?<ORIGIN>(((\d+>)?[a-zA-Z]?:[^:]*)|([^:]*))):)"
+        // Origin may also be empty. In this case there's no trailing colon.
+        + "|())"
+        // Match the empty string or a string without a colon that ends with a space
+        + "(?<SUBCATEGORY>(()|([^:]*? )))"
+        // Match 'error' or 'warning' followed by a space.
+        + @"(?<CATEGORY>(error|warning))\s*"
+        // Match anything without a colon, followed by a colon
+        + "(?<CODE>[^:]*):"
+        // Whatever's left on this line, including colons.
+        + "(?<TEXT>.*)$",
+        RegexOptions.IgnoreCase
+    );
+
+For more information on MSBuild compliant messages see [http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx](http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx).
