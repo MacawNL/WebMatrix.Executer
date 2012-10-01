@@ -112,80 +112,82 @@ alongside your extension assembly, the interface assembly and the factory assemb
 To enable **WebMatrix.Executer** functionality, in your extension,
 the extensions needs an implementation as simple as:
 
-	namespace MyLittleWebMatrixExtension
-	{
-	    /// <summary>
-	    /// A sample WebMatrix extension.
-	    /// </summary>
-	    [Export(typeof(Extension))]
-	    public class MyLittleWebMatrixExtension : Extension
-	    {
-	        /// <summary>
-	        /// Stores a reference to the WebMatrix host interface.
-	        /// </summary>
-	        private IWebMatrixHost _webMatrixHost;
-	
-	        /// <summary>
-	        /// Reference to the EditorTaskPanelService.
-	        /// </summary>
-	        private IEditorTaskPanelService _editorTaskPanel;
-	
-	        [Import(typeof(IEditorTaskPanelService))]
-	        private IEditorTaskPanelService EditorTaskPanelService
-	        {
-	            get
-	            {
-	                return _editorTaskPanel;
-	            }
-	            set
-	            {
-	                _editorTaskPanel = value;
-	            }
-	        }
-	
-	        DesignFactory.WebMatrix.IExecuter.IExecuter _executer;
-	
-	        /// <summary>
-	        /// Initializes new instance of MyLittleWebMatrixExtension.
-	        /// </summary>
-	        public MyLittleWebMatrixExtension()
-	            : base("MyLittleWebMatrixExtension")
-	        {
-	        }
-	
-	        /// <summary>
-	        /// Called to initialize the extension.
-	        /// </summary>
-	        /// <param name="host">WebMatrix host interface.</param>
-	        /// <param name="initData">Extension initialization data.</param>
-	        protected override void Initialize(IWebMatrixHost host, 
-	                                           ExtensionInitData initData)
-	        {
-	            _webMatrixHost = host;
-	
-                // Add a simple button to the Ribbon
-                initData.RibbonItems.Add(
-                    new RibbonGroup("DoIt Group",new RibbonItem[]
-                       {new RibbonButton("Just DoIt",
-                        new DelegateCommand(HandleRibbonButtonInvoke),
-                        null, _starImageSmall, _starImageLarge)}));
-	        
-	            _executer = DesignFactory.WebMatrix.ExecuterFactory.GetExecuter(
-	                            "DoIt", _webMatrixHost, _editorTaskPanel);
-	        }
+```cs
+namespace MyLittleWebMatrixExtension
+{
+    /// <summary>
+    /// A sample WebMatrix extension.
+    /// </summary>
+    [Export(typeof(Extension))]
+    public class MyLittleWebMatrixExtension : Extension
+    {
+        /// <summary>
+        /// Stores a reference to the WebMatrix host interface.
+        /// </summary>
+        private IWebMatrixHost _webMatrixHost;
 
-	        /// <summary>
-	        /// Called when the Ribbon button is invoked.
-	        /// </summary>
-	        /// <param name="parameter">Unused.</param>
-	        private async void HandleRibbonButtonInvoke(object parameter)
-	        {
-	            string scriptDoIt = Path.Combine(_webMatrixHost.WebSite.Path, 
-	            	@"WebMatrixTests\DoIt.bat");
-	            await _executer.RunAsync("cmd.exe", "/c \"" + scriptDoIt + "\"");
-	        }	    
-	    }
-	}
+        /// <summary>
+        /// Reference to the EditorTaskPanelService.
+        /// </summary>
+        private IEditorTaskPanelService _editorTaskPanel;
+
+        [Import(typeof(IEditorTaskPanelService))]
+        private IEditorTaskPanelService EditorTaskPanelService
+        {
+            get
+            {
+                return _editorTaskPanel;
+            }
+            set
+            {
+                _editorTaskPanel = value;
+            }
+        }
+
+        DesignFactory.WebMatrix.IExecuter.IExecuter _executer;
+
+        /// <summary>
+        /// Initializes new instance of MyLittleWebMatrixExtension.
+        /// </summary>
+        public MyLittleWebMatrixExtension()
+            : base("MyLittleWebMatrixExtension")
+        {
+        }
+
+        /// <summary>
+        /// Called to initialize the extension.
+        /// </summary>
+        /// <param name="host">WebMatrix host interface.</param>
+        /// <param name="initData">Extension initialization data.</param>
+        protected override void Initialize(IWebMatrixHost host, 
+                                           ExtensionInitData initData)
+        {
+            _webMatrixHost = host;
+
+            // Add a simple button to the Ribbon
+            initData.RibbonItems.Add(
+                new RibbonGroup("DoIt Group",new RibbonItem[]
+                   {new RibbonButton("Just DoIt",
+                    new DelegateCommand(HandleRibbonButtonInvoke),
+                    null, _starImageSmall, _starImageLarge)}));
+        
+            _executer = DesignFactory.WebMatrix.ExecuterFactory.GetExecuter(
+                            "DoIt", _webMatrixHost, _editorTaskPanel);
+        }
+
+        /// <summary>
+        /// Called when the Ribbon button is invoked.
+        /// </summary>
+        /// <param name="parameter">Unused.</param>
+        private async void HandleRibbonButtonInvoke(object parameter)
+        {
+            string scriptDoIt = Path.Combine(_webMatrixHost.WebSite.Path, 
+            	@"WebMatrixTests\DoIt.bat");
+            await _executer.RunAsync("cmd.exe", "/c \"" + scriptDoIt + "\"");
+        }	    
+    }
+}
+```
 
 Note the `EditorTaskPanelService` stuff, we need this to be able to create the
 Output and Errors & Warnings panes.
