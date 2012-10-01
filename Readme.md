@@ -211,6 +211,7 @@ created for the **Output** pane and **Errors & Warnings** pane.
 The call to `GetExecuter(...)` returns an
 instance of an object that implements the following interface:
 
+```cs
 	namespace DesignFactory.WebMatrix.IExecuter
 	{
 	    public interface IExecuter
@@ -229,6 +230,7 @@ instance of an object that implements the following interface:
 	        void InitializeTabs();
 	    }
 	}
+```
 
 These methods do the following:
 
@@ -237,9 +239,11 @@ successful, false otherwise. Output (StdOut, Stderr) is written to output pane
 and parsed for errors and warnings.
 Example: 
 
+```cs
 	string scriptDoIt = Path.Combine(_webMatrixHost.WebSite.Path, 
 	                                 @"WebMatrixTests\DoIt.bat");
 	var ok = await _executer.RunAsync("cmd.exe", "/c \"" + scriptDoIt + "\"");
+```
 
 `RunPowerShellAsync`: Execute a powershell command (in the arguments) in a
 64 bits PowerShell process on a 64 bits Windows, and in a 32 bits PowerShell
@@ -279,14 +283,17 @@ The following characters are assumed to be common filename characters: a-zA-Z0-9
 
 Simple regular expression user for error/warning parsing:
 
+```cs
     static private readonly Regex simpleMessageExpression = new Regex
     (
         String.Format(@"(?<CATEGORY>({0}error{0}|{0}warning{0}))", excludeCommonFilenameCharacters),
         RegexOptions.IgnoreCase
     );
-	
+```
+
 MSBuild compliant error/warning parsing:
 
+```cs
     static private readonly Regex originCategoryCodeTextExpression = new Regex
     (
         // Beginning of line and any amount of whitespace.
@@ -306,5 +313,6 @@ MSBuild compliant error/warning parsing:
         + "(?<TEXT>.*)$",
         RegexOptions.IgnoreCase
     );
+```
 
 For more information on MSBuild compliant messages see [http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx](http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx).
