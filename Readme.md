@@ -212,24 +212,24 @@ The call to `GetExecuter(...)` returns an
 instance of an object that implements the following interface:
 
 ```cs
-	namespace DesignFactory.WebMatrix.IExecuter
-	{
-	    public interface IExecuter
-	    {
-	        System.Threading.Tasks.Task<bool> RunAsync(string fileName, 
-	                                                   string arguments);
-	        System.Threading.Tasks.Task<bool> RunPowerShellAsync(string arguments);
-	        bool IsRunning();
-	        void Cancel();
-	        void Write(string format, params object[] args);
-	        void WriteLine(string format, params object[] args);
-	
-	        // Only used by DesignFactory.WebMatrix.ExecuterFactory.GetExecuter()
-	        void Initialize(string tasksource, IWebMatrixHost webMatrixHost, 
-	                        IEditorTaskPanelService editorTaskPanelService);
-	        void InitializeTabs();
-	    }
-	}
+namespace DesignFactory.WebMatrix.IExecuter
+{
+    public interface IExecuter
+    {
+        System.Threading.Tasks.Task<bool> RunAsync(string fileName, 
+                                                   string arguments);
+        System.Threading.Tasks.Task<bool> RunPowerShellAsync(string arguments);
+        bool IsRunning();
+        void Cancel();
+        void Write(string format, params object[] args);
+        void WriteLine(string format, params object[] args);
+
+        // Only used by DesignFactory.WebMatrix.ExecuterFactory.GetExecuter()
+        void Initialize(string tasksource, IWebMatrixHost webMatrixHost, 
+                        IEditorTaskPanelService editorTaskPanelService);
+        void InitializeTabs();
+    }
+}
 ```
 
 These methods do the following:
@@ -240,9 +240,9 @@ and parsed for errors and warnings.
 Example: 
 
 ```cs
-	string scriptDoIt = Path.Combine(_webMatrixHost.WebSite.Path, 
-	                                 @"WebMatrixTests\DoIt.bat");
-	var ok = await _executer.RunAsync("cmd.exe", "/c \"" + scriptDoIt + "\"");
+string scriptDoIt = Path.Combine(_webMatrixHost.WebSite.Path, 
+                                 @"WebMatrixTests\DoIt.bat");
+var ok = await _executer.RunAsync("cmd.exe", "/c \"" + scriptDoIt + "\"");
 ```
 
 `RunPowerShellAsync`: Execute a powershell command (in the arguments) in a
@@ -284,35 +284,35 @@ The following characters are assumed to be common filename characters: a-zA-Z0-9
 Simple regular expression user for error/warning parsing:
 
 ```cs
-    static private readonly Regex simpleMessageExpression = new Regex
-    (
-        String.Format(@"(?<CATEGORY>({0}error{0}|{0}warning{0}))", excludeCommonFilenameCharacters),
-        RegexOptions.IgnoreCase
-    );
+static private readonly Regex simpleMessageExpression = new Regex
+(
+    String.Format(@"(?<CATEGORY>({0}error{0}|{0}warning{0}))", excludeCommonFilenameCharacters),
+    RegexOptions.IgnoreCase
+);
 ```
 
 MSBuild compliant error/warning parsing:
 
 ```cs
-    static private readonly Regex originCategoryCodeTextExpression = new Regex
-    (
-        // Beginning of line and any amount of whitespace.
-        @"^\s*"
-        // Match a [optional project number prefix 'ddd>'], single letter + colon + remaining filename, or
-        // string with no colon followed by a colon.
-        + @"(((?<ORIGIN>(((\d+>)?[a-zA-Z]?:[^:]*)|([^:]*))):)"
-        // Origin may also be empty. In this case there's no trailing colon.
-        + "|())"
-        // Match the empty string or a string without a colon that ends with a space
-        + "(?<SUBCATEGORY>(()|([^:]*? )))"
-        // Match 'error' or 'warning' followed by a space.
-        + @"(?<CATEGORY>(error|warning))\s*"
-        // Match anything without a colon, followed by a colon
-        + "(?<CODE>[^:]*):"
-        // Whatever's left on this line, including colons.
-        + "(?<TEXT>.*)$",
-        RegexOptions.IgnoreCase
-    );
+static private readonly Regex originCategoryCodeTextExpression = new Regex
+(
+    // Beginning of line and any amount of whitespace.
+    @"^\s*"
+    // Match a [optional project number prefix 'ddd>'], single letter + colon + remaining filename, or
+    // string with no colon followed by a colon.
+    + @"(((?<ORIGIN>(((\d+>)?[a-zA-Z]?:[^:]*)|([^:]*))):)"
+    // Origin may also be empty. In this case there's no trailing colon.
+    + "|())"
+    // Match the empty string or a string without a colon that ends with a space
+    + "(?<SUBCATEGORY>(()|([^:]*? )))"
+    // Match 'error' or 'warning' followed by a space.
+    + @"(?<CATEGORY>(error|warning))\s*"
+    // Match anything without a colon, followed by a colon
+    + "(?<CODE>[^:]*):"
+    // Whatever's left on this line, including colons.
+    + "(?<TEXT>.*)$",
+    RegexOptions.IgnoreCase
+);
 ```
 
 For more information on MSBuild compliant messages see [http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx](http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx).

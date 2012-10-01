@@ -5,8 +5,8 @@ git commit -m "Updated the documentation"
 git push
 [System.Diagnostics.Process]::Start("https://github.com/MacawNL/WebMatrix.Executer/blob/master/Readme.md")
 $wc = New-Object System.Net.WebClient
-$wc.DownloadString("http://documentup.com/MacawNL/WebMatrix.Executer") > $executingScriptDirectory\WebMatrix.Executer.gh-pages\WebMatrix.Executer\index.html
-cd $executingScriptDirectory\WebMatrix.Executer.gh-pages\WebMatrix.Executer
+$wc.DownloadString("http://documentup.com/MacawNL/WebMatrix.Executer") > $executingScriptDirectory\..\WebMatrix.Executer.gh-pages\WebMatrix.Executer\index.html
+cd $executingScriptDirectory\..\WebMatrix.Executer.gh-pages\WebMatrix.Executer
 git add index.html
 git commit -m "Updated DocumentUp version of Readme.rd"
 git push
