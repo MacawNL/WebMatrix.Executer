@@ -31,7 +31,7 @@ to which "group" an application or script belongs. The **Output** pane can be sw
 source, the **Errors & Warnings** pane can be filtered on the task source.
 
 ### The Output pane
-![The Output pane](http://macawnl.github.com/WebMatrix.Executer/img/OutputPane.png)
+![The Output pane](https://raw.github.com/MacawNL/WebMatrix.Executer/master/DocumentationImages/OutputPane.png)
 
 - The Output pane support multiple task sources
 - When an executing task has output, the Output pane is made visible
@@ -44,7 +44,7 @@ source, the **Errors & Warnings** pane can be filtered on the task source.
    automatically to the Errors & Warnings pane
 
 ### The Errors & Warnings pane
-![The Errors & Warnings pane](http://macawnl.github.com/WebMatrix.Executer/img//ErrorsAndWarningsPane.png)
+![The Errors & Warnings pane](https://raw.github.com/MacawNL/WebMatrix.Executer/master/DocumentationImages/ErrorsAndWarningsPane.png)
 
 - The Errors & Warnings pane displays the error and warning messages of all task sources
 - Output of an executing task (StdOut, StdErr) is parsed real-time for erros and warnings
