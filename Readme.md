@@ -1,5 +1,7 @@
 NuGet package: [http://nuget.org/packages/WebMatrix.Executer](http://nuget.org/packages/WebMatrix.Executer)
 
+DocumentUp version of the documentation: http://macawnl.github.com/WebMatrix.Executer/
+
 # WebMatrix.Executer
 
 ## Introduction
@@ -16,7 +18,7 @@ errors and warnings that are displayed in a WebMatrix **Errors & Warnings** pane
 with just a few lines of code. Multiple extensions using **WebMatrix.Executer**
 will use the same panes.
 
-## The provided functionality
+## Functionality
 **WebMatrix.Executer** provides two panes:
 
 - The Output pane where the output of an executing program is captured (StdOut, StdErr)
@@ -28,8 +30,9 @@ Applications and scripts are executed under a "task source", this is a simple st
 to which "group" an application or script belongs. The **Output** pane can be switched to the output of a task 
 source, the **Errors & Warnings** pane can be filtered on the task source.
 
-### The Output pane
+### Output pane
 ![The Output pane](https://raw.github.com/MacawNL/WebMatrix.Executer/master/DocumentationImages/OutputPane.png)
+[Enlarge image](https://raw.github.com/MacawNL/WebMatrix.Executer/master/DocumentationImages/OutputPane.png)
 
 - The Output pane support multiple task sources
 - When an executing task has output, the Output pane is made visible
@@ -41,8 +44,9 @@ source, the **Errors & Warnings** pane can be filtered on the task source.
 - When the output of a task contains errors or warnings, **WebMatrix.Executer** switches
    automatically to the Errors & Warnings pane
 
-### The Errors & Warnings pane
+### Errors & Warnings pane
 ![The Errors & Warnings pane](https://raw.github.com/MacawNL/WebMatrix.Executer/master/DocumentationImages/ErrorsAndWarningsPane.png)
+[Enlarge image](https://raw.github.com/MacawNL/WebMatrix.Executer/master/DocumentationImages/ErrorsAndWarningsPane.png)
 
 - The Errors & Warnings pane displays the error and warning messages of all task sources
 - Output of an executing task (StdOut, StdErr) is parsed real-time for erros and warnings
@@ -79,7 +83,7 @@ or remove methods signatures, it will only be extended to ensure backwards
 compatibility to older extensions while enabling innovations in 
 WebMatrix.Executer itself.
 
-## Distribution of WebMatrix.Executer: NuGet
+## Distribution: NuGet
 **WebMatrix.Executer** is distributed as a [NuGet](http://nuget.org/packages/WebMatrix.Executer) 
 package. The package is named **WebMatrix.Executer**. The **WebMatrix.Executer** NuGet 
 package consists of the following assemblies:
@@ -103,7 +107,7 @@ http://msdn.microsoft.com/en-us/library/dd409610.aspx.
 This assembly is NOT referenced, but will be copied to the output directory
 alongside your extension assembly, the interface assembly and the factory assembly.
 
-## Using **WebMatrix.Extender** in your extension
+## Usage
 
 To enable **WebMatrix.Executer** functionality, in your extension,
 the extensions needs an implementation as simple as:
@@ -142,7 +146,7 @@ the extensions needs an implementation as simple as:
 	        DesignFactory.WebMatrix.IExecuter.IExecuter _executer;
 	
 	        /// <summary>
-	        /// Initializes a new instance of the MyLittleWebMatrixExtension class.
+	        /// Initializes new instance of MyLittleWebMatrixExtension.
 	        /// </summary>
 	        public MyLittleWebMatrixExtension()
 	            : base("MyLittleWebMatrixExtension")
@@ -176,7 +180,8 @@ the extensions needs an implementation as simple as:
 	        /// <param name="parameter">Unused.</param>
 	        private async void HandleRibbonButtonInvoke(object parameter)
 	        {
-	            string scriptDoIt = Path.Combine(_webMatrixHost.WebSite.Path, @"WebMatrixTests\DoIt.bat");
+	            string scriptDoIt = Path.Combine(_webMatrixHost.WebSite.Path, 
+	            	@"WebMatrixTests\DoIt.bat");
 	            await _executer.RunAsync("cmd.exe", "/c \"" + scriptDoIt + "\"");
 	        }	    
 	    }
@@ -188,14 +193,14 @@ Output and Errors & Warnings panes.
 The `DesignFactory.WebMatrix.ExecuterFactory.GetExecuter(...)` call requires three
 parameters:
 
-`string tasksource`:  Specifies the group name where tasks from this executer
+* `string tasksource`:  Specifies the group name where tasks from this executer
 are executed under. This name is shown as selector in the Output pane and
 can be used to filter errors and warnings.
 
-`IWebMatrixHost webMatrixHost`: the WebMatrix host, available as parameter to
+* `IWebMatrixHost webMatrixHost`: the WebMatrix host, available as parameter to
 the `Initialize()` method in your WebMatrix extension.
 
-`IEditorTaskPanelService editorTaskPanelService`: Reference to the 
+* `IEditorTaskPanelService editorTaskPanelService`: Reference to the 
 `EditorTaskPanelService`, see example code above on how to get it.
 
 In the `GetExecuter(...)` call the **WebMatrix.Executer** system is initialized and the tabs are
@@ -254,7 +259,7 @@ given to `GetExecuter()`. Not for use by the extension developer.
 `InitializeTabs`: Initialize the tabs for the executer system. Called by the
 `ExecuterFactory.GetExecuter()` method. Not for use by the extension developer.
 
-## Error format for parsing errors
+## Formatting errors & warnings
 
 Any line containing the word 'error' or 'warning' is reported. We don't only parse output from Visual Studio/MSBuild,
 but also from external tools that don't use the Visual Studio/MsBuild guidelines for reporting errors and warnings.
