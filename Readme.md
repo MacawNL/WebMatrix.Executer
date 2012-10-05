@@ -109,8 +109,17 @@ alongside your extension assembly, the interface assembly and the factory assemb
 
 ## Usage
 
-To enable **WebMatrix.Executer** functionality, in your extension,
-the extensions needs an implementation as simple as:
+I assume you create a new WebMatrix Extension project using the Visual Studio 
+Visual C# template **WebMatrix Extension**. When you create a new project based
+on this template you get a file **WebMatrixExtensions.cs**. In this file add the 
+additional reference:
+
+```cs
+using Microsoft.WebMatrix.Extensibility.Editor;
+```
+Now check the generated class for the missing parts as you can find
+in the sample code below to enable **WebMatrix.Executer** functionality
+in your extension:
 
 ```cs
 namespace MyLittleWebMatrixExtension
@@ -264,6 +273,35 @@ given to `GetExecuter()`. Not for use by the extension developer.
 
 `InitializeTabs`: Initialize the tabs for the executer system. Called by the
 `ExecuterFactory.GetExecuter()` method. Not for use by the extension developer.
+
+## Dev deployment
+
+During development of your project in Visual Studio there is some magic happening
+on pre-build and post-build. This magic is configured on the properties of the project.
+Right-click the project and select **Properties**. Open **Build Events** in the section list 
+on the left. You now see two text boxes: **Pre-build event command line** and
+**Post-build event command line**. If you have an older version of the Visual Studio 
+template and are working with the release version of WebMatrix 2 it deploys extensions 
+to the **Extensions\20RC** folder instead of **Extensions\20**.
+
+Make sure that **Pre-build event command line** contains:
+
+	if exist "$(TEMP)\WebMatrix.crash.info" del "$(TEMP)\WebMatrix.crash.info"
+	if exist "$(USERPROFILE)\AppData\Local\Microsoft\WebMatrix\Extensions\20\DisabledExtensions" del "$(USERPROFILE)\AppData\Local\Microsoft\WebMatrix\Extensions\20\DisabledExtensions"
+
+Make sure that **Post-build event command line** contains:
+
+	if not exist "$(USERPROFILE)\AppData\Local\Microsoft\WebMatrix\Extensions\20\$(TargetName)" md "$(USERPROFILE)\AppData\Local\Microsoft\WebMatrix\Extensions\20\$(TargetName)"
+	copy "$(TargetDir)$(TargetName).dll" "$(USERPROFILE)\AppData\Local\Microsoft\WebMatrix\Extensions\20\$(TargetName)" > NUL
+	copy "$(TargetDir)$(TargetName).pdb" "$(USERPROFILE)\AppData\Local\Microsoft\WebMatrix\Extensions\20\$(TargetName)" > NUL
+	
+I had cases where F5 on my WebMatrix extension project did not work. You get the error message **A project with an Output Type of Class Library cannot be started directly**. In those cases do the following:
+
+1. Open the **Debug** section
+
+2. Set **Start Action** to **Start external program** 
+
+3. set the external program to execute to `C:\Program Files (x86)\Microsoft WebMatrix\WebMatrix.exe`
 
 ## Formatting errors & warnings
 
