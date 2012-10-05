@@ -11,4 +11,5 @@ git add index.html
 git commit -m "Updated DocumentUp version of Readme.rd"
 git push
 popd
+[System.Diagnostics.Process]::Start("http://documentup.com/MacawNL/WebMatrix.Executer/recompile")
 [System.Diagnostics.Process]::Start("http://macawnl.github.com/WebMatrix.Executer/")
