@@ -301,7 +301,7 @@ I had cases where F5 on my WebMatrix extension project did not work. You get the
 
 2. Set **Start Action** to **Start external program** 
 
-3. set the external program to execute to `C:\Program Files (x86)\Microsoft WebMatrix\WebMatrix.exe`
+3. Set the external program to execute to `C:\Program Files (x86)\Microsoft WebMatrix\WebMatrix.exe`
 
 ## Formatting errors & warnings
 
