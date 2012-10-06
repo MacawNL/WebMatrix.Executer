@@ -111,8 +111,13 @@ alongside your extension assembly, the interface assembly and the factory assemb
 
 I assume you create a new WebMatrix Extension project using the Visual Studio 
 Visual C# template **WebMatrix Extension**. When you create a new project based
-on this template you get a file **WebMatrixExtensions.cs**. In this file add the 
-additional reference:
+on this template you get a project targeting **.NET Framework 4.0**. Because we make 
+extensive use of [async and await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) 
+we need to change this to **.NET Framework 4.5**. Right-click the project and select **Properties**. 
+Open **Application** in the section list and set **Target framework** to **.NET Framework 4.5**.
+
+In the WebMatrix Extension project you get a file **WebMatrixExtensions.cs**. This file contains
+the skeleton for the implementation of the extension. In this file add the additional reference:
 
 ```cs
 using Microsoft.WebMatrix.Extensibility.Editor;
