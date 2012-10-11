@@ -20,7 +20,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{996EACFA
 		NuGet\Install.ps1 = NuGet\Install.ps1
 		NuGet\NuGet.exe = NuGet\NuGet.exe
 		NuGet\PublishToPublicNuGet.cmd = NuGet\PublishToPublicNuGet.cmd
-		NuGet\SharePoint.DesignFactory.ContentFiles.nuspec = NuGet\SharePoint.DesignFactory.ContentFiles.nuspec
 		NuGet\WebMatrix.Executer.nuspec = NuGet\WebMatrix.Executer.nuspec
 		NuGet\readme.txt = NuGet\readme.txt
 	EndProjectSection

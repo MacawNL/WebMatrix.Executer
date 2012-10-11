@@ -359,3 +359,9 @@ static private readonly Regex originCategoryCodeTextExpression = new Regex
 ```
 
 For more information on MSBuild compliant messages see [http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx](http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx).
+
+## Dev tips
+
+This section describes some random tips on working with **WebMatrix.Executer**.
+
+1. Tom improve debugging speed, uload all extensions you don't nead now.

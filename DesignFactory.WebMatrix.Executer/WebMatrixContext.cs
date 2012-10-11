@@ -27,7 +27,12 @@ namespace DesignFactory.WebMatrix.Executer
             }
         }
 
-       public static void InitializeTabs()
+        public static void SetCancelAction(Action cancelAction)
+        {
+            OutputPaneInstance.CancelAction = cancelAction;
+        }
+
+        public static void InitializeTabs()
         {
             if (WebMatrixContext.WebMatrixHost.WebSite != null)
             {

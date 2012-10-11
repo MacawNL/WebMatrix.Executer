@@ -25,6 +25,8 @@ namespace DesignFactory.WebMatrix.Executer
             InitializeComponent();
         }
 
+        public Action CancelAction { get; set; }
+
         /// <summary>
         /// Required for binding.
         /// </summary>
@@ -157,7 +159,7 @@ namespace DesignFactory.WebMatrix.Executer
         public bool HasExecutingTask(string tasksource)
         {
             TaskSourceOutput tso = GetTaskSourceOutput(tasksource);
-            return (tso == null || tso.ExecutingProcess == null);
+            return (tso != null && tso.ExecutingProcess != null);
         }
 
         public void CancelExecutingTask(string tasksource)
@@ -191,9 +193,9 @@ namespace DesignFactory.WebMatrix.Executer
 
         private void ProcessCancelButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (CurrentTaskSourceOutput != null && CurrentTaskSourceOutput.ProcessExecuter != null)
+            if (CancelAction != null)
             {
-                CurrentTaskSourceOutput.ProcessExecuter.Cancel();
+                CancelAction();
             }
         }
     }

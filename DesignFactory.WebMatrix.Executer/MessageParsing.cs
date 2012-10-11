@@ -190,6 +190,15 @@ namespace DesignFactory.WebMatrix.Executer
             return category;
         }
 
+        /// <summary>
+        /// Parse a filename + linenumber in format file.abc(1), file.abc(1,2) or file.abc(1,2-3,4).
+        /// </summary>
+        /// <param name="origin">Original string.</param>
+        /// <param name="filename">Filename found.</param>
+        /// <param name="lineNumber">Line number found. 0 if no line number.</param>
+        /// <param name="columnNumber">Column found. 0 if no column.</param>
+        /// <param name="endLineNumber">End line number found. 0 if no end line number.</param>
+        /// <param name="endColumnNumber">End column found. 0 if no end column.</param>
         private static void ParseOrigin(string origin, out string filename,
                      out int lineNumber, out int columnNumber,
                      out int endLineNumber, out int endColumnNumber)
@@ -198,10 +207,11 @@ namespace DesignFactory.WebMatrix.Executer
             string[] temp;
             string[] left, right;
 
+            origin = origin.Trim();
             if (origin.IndexOf('(') != -1)
             {
                 lParen = origin.IndexOf('(');
-                filename = origin.Substring(0, lParen);
+                filename = origin.Substring(0, lParen).Trim();
                 temp = origin.Substring(lParen + 1, origin.Length - lParen - 2).Split(',');
                 if (temp.Length == 1)
                 {

@@ -227,7 +227,7 @@ namespace DesignFactory.WebMatrix.Executer
         /// Output line to parse for errors in MSBuild error format. 
         /// <seealso cref="http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx"/>
         /// </param>
-        public void ParseForTask(string tasksource, string line)
+        public void ParseForTask(string tasksource, string line, Regex[] ignoreList)
         {
            this.Dispatcher.Invoke(new Action(() =>
            {
@@ -235,7 +235,7 @@ namespace DesignFactory.WebMatrix.Executer
                 string text, code, filename;
                 int linenumber, column;
 
-                if (MessageParsing.ParseErrorOrWarning(line, "", 0, null, out category, out text, out code, out filename, out linenumber, out column))
+                if (MessageParsing.ParseErrorOrWarning(line, "", 0, ignoreList, out category, out text, out code, out filename, out linenumber, out column))
                 {
                     AddTask(tasksource, category, text, code, filename, linenumber, column);
                 }

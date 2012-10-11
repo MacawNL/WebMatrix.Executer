@@ -38,12 +38,11 @@ namespace DesignFactory.WebMatrix.Executer
                 while ((line = _proc.StandardError.ReadLine()) != null)
                 {
                     _executer.WriteLine(line);
-                    WebMatrixContext.TaskListPaneInstance.ParseForTask(_tasksource, line);
                 }
             }
-            catch(Exception ex)
+            catch
             {
-                _executer.WriteLine("Reading from stderr failed. Exception: {0}", ex.ToString());
+                // Additional lines go down the drain
             }
         }
 
@@ -58,12 +57,11 @@ namespace DesignFactory.WebMatrix.Executer
                 while ((line = _proc.StandardOutput.ReadLine()) != null)
                 {
                     _executer.WriteLine(line);
-                    WebMatrixContext.TaskListPaneInstance.ParseForTask(_tasksource, line);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                _executer.WriteLine("Reading from stdout failed. Exception: {0}", ex.ToString());
+                // Additional lines go down the drain
             }
         }
     }
