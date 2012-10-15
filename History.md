@@ -1,3 +1,15 @@
+## 1.4.0.0 (2012-10-13)
+
+* Solved issue with InitializeTabs()
+
+## 1.3.0.0 (2012-10-12)
+
+* Added WriteNoParse() and WriteLineNoParse() functions for output that is not parsed for warnings and errors.
+
+## 1.2.0.0 (2012-10-12)
+
+* Fixed deployment issue, wrong assemblies were included.
+
 ## 1.1.0.0 (2012-10-11)
 
 * Added support for multiple scenario's using new Start() and End() methods in interface: 

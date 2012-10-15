@@ -44,8 +44,11 @@ namespace DesignFactory.WebMatrix
             {
                 executer.Initialize(tasksource, webMatrixHost, editorTaskPanelService);
 
-                // Mandatory to get the tab showing!
+                // Mandatory to get the tab showing on changes!
                 editorTaskPanelService.PageChanged += (object sender, EventArgs eventArgs) => { executer.InitializeTabs(); };
+
+                // Mandatory to get tabs displayed directly!
+                executer.InitializeTabs();
             }
             return executer;
         }

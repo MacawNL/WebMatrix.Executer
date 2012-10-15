@@ -364,4 +364,4 @@ For more information on MSBuild compliant messages see [http://blogs.msdn.com/b/
 
 This section describes some random tips on working with **WebMatrix.Executer**.
 
-1. Tom improve debugging speed, uload all extensions you don't nead now.
+1. To improve debugging speed, remove all extensions you don't neat now.

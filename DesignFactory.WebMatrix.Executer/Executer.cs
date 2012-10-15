@@ -21,6 +21,7 @@ namespace DesignFactory.WebMatrix.Executer
         public void Start(Action cancelAction)
         {
             _inSequence = true;
+            InitializeTabs();
             ShowOutputPaneAndClearTaskListPane();
 
             if (cancelAction != null)
@@ -46,8 +47,7 @@ namespace DesignFactory.WebMatrix.Executer
 
             if (isCanceled)
             {
-                WriteLine(MessageGeneration.Generate(TaskCategory.Warning, "the execution is canceled", String.Empty, String.Empty, 0, 0));
-                WriteLine(WebMatrixContext.TaskListPaneInstance.GetTaskListReport(_tasksource, canceled: true));
+                WriteLineNoParse(WebMatrixContext.TaskListPaneInstance.GetTaskListReport(_tasksource, canceled: true));
                 success = false;
             }
             else
@@ -101,6 +101,34 @@ namespace DesignFactory.WebMatrix.Executer
             Write(Environment.NewLine);
         }
 
+        public void WriteNoParse(string format, params object[] args)
+        {
+            if (!_inSequence)
+            {
+                throw new ApplicationException("WriteNoParse() and WriteLineNoParse() can only be executed within a sequence starting with Executer.Start(), ending with Executer.End(bool isCanceled).");
+            }
+
+            string output;
+
+            // Test if no args are specified. This solves the case where a string is output that contains '{' or '}'
+            // characters, for example in processing lines in output from executing process.
+            if (args.Length == 0)
+            {
+                output = format;
+            }
+            else
+            {
+                output = String.Format(format, args);
+            }
+            WebMatrixContext.OutputPaneInstance.Write(_tasksource, output);
+        }
+
+        public void WriteLineNoParse(string format, params object[] args)
+        {
+            WriteNoParse(format, args);
+            WriteNoParse(Environment.NewLine);
+        }
+        
         public void ConfigureParsing(Regex[] ignoreList, Func<string, string> processLineBeforeParsing)
         {
             _ignoreList = ignoreList;
@@ -244,7 +272,5 @@ namespace DesignFactory.WebMatrix.Executer
             // Make sure that the tasksource output is available
             TaskSourceOutput tso = WebMatrixContext.OutputPaneInstance.EnsureTaskSourceOutputForExecutingTask(_tasksource, null, executer: this);
         }
-
-
     }
 }

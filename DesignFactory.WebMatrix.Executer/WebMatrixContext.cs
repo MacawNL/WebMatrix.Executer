@@ -34,30 +34,16 @@ namespace DesignFactory.WebMatrix.Executer
 
         public static void InitializeTabs()
         {
-            if (WebMatrixContext.WebMatrixHost.WebSite != null)
+            if (!WebMatrixContext.EditorTaskPanelService.TaskTabExists(OutputPane.OutputPaneTaskPanelId))
             {
-                if (!WebMatrixContext.EditorTaskPanelService.TaskTabExists(OutputPane.OutputPaneTaskPanelId)) 
-                {
-                    WebMatrixContext.EditorTaskPanelService.AddTaskTab(OutputPane.OutputPaneTaskPanelId, new TaskTabItemDescriptor(null, "Output", WebMatrixContext.OutputPaneInstance, Brushes.DarkOliveGreen));
-                }
-                if (!WebMatrixContext.EditorTaskPanelService.TaskTabExists(TaskListPane.TaskListPaneTaskPanelId))
-                {
-                    WebMatrixContext.EditorTaskPanelService.AddTaskTab(TaskListPane.TaskListPaneTaskPanelId, new TaskTabItemDescriptor(null, "Errors & Warnings", WebMatrixContext.TaskListPaneInstance, Brushes.DarkOliveGreen));
-                }
+                WebMatrixContext.EditorTaskPanelService.AddTaskTab(OutputPane.OutputPaneTaskPanelId, new TaskTabItemDescriptor(null, "Output", WebMatrixContext.OutputPaneInstance, Brushes.DarkOliveGreen));
             }
- 
-            else 
+            if (!WebMatrixContext.EditorTaskPanelService.TaskTabExists(TaskListPane.TaskListPaneTaskPanelId))
             {
-                if (WebMatrixContext.EditorTaskPanelService.TaskTabExists(OutputPane.OutputPaneTaskPanelId)) 
-                {
-                    WebMatrixContext.EditorTaskPanelService.RemoveTaskTab(OutputPane.OutputPaneTaskPanelId);
-                }
-                if (WebMatrixContext.EditorTaskPanelService.TaskTabExists(TaskListPane.TaskListPaneTaskPanelId)) 
-                {
-                    WebMatrixContext.EditorTaskPanelService.RemoveTaskTab(TaskListPane.TaskListPaneTaskPanelId); 
-                }
+                WebMatrixContext.EditorTaskPanelService.AddTaskTab(TaskListPane.TaskListPaneTaskPanelId, new TaskTabItemDescriptor(null, "Errors & Warnings", WebMatrixContext.TaskListPaneInstance, Brushes.DarkOliveGreen));
             }
         }
+
         // Only the first extension that is executed will do initialization.
         internal static bool _isInitialised = false;
 

@@ -20,6 +20,8 @@ namespace DesignFactory.WebMatrix.IExecuter
         void Cancel();
         void Write(string format, params object[] args);
         void WriteLine(string format, params object[] args);
+        void WriteNoParse(string format, params object[] args);
+        void WriteLineNoParse(string format, params object[] args);
         void ConfigureParsing(Regex[] ignoreList, Func<string, string> processLineBeforeParsing);
         System.Windows.Threading.Dispatcher UIThreadDispatcher { get; }
  
