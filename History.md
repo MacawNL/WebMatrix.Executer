@@ -1,3 +1,10 @@
+## 1.5.0.0 (2013-03-02)
+
+* Complete refactoring from .Net 4.5 framework using C# 5 async/await to .Net 4 Framework to comply with minimal requirements webmatrix.
+* Needed to change the interface as well.
+* Added to interface: CancellationTokenSource GetCancellationTokenSource(), CancellationToken GetCancellationToken()
+* Changed in interface: bool Start(Action cancelAction = null), bool End()
+
 ## 1.4.0.0 (2012-10-13)
 
 * Solved issue with InitializeTabs()

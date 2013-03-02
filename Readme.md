@@ -18,6 +18,9 @@ errors and warnings that are displayed in a WebMatrix **Errors & Warnings** pane
 with just a few lines of code. Multiple extensions using **WebMatrix.Executer**
 will use the same panes.
 
+A good example using this NuGet package can be found at: https://github.com/MacawNL/TypeScript4WebMatrix/blob/master/TypeScript4WebMatrix/WebMatrixExtension.cs.
+This extension provides TypeScript compilation to WebMatrix.
+
 ## Functionality
 **WebMatrix.Executer** provides two panes:
 
@@ -111,10 +114,7 @@ alongside your extension assembly, the interface assembly and the factory assemb
 
 I assume you create a new WebMatrix Extension project using the Visual Studio 
 Visual C# template **WebMatrix Extension**. When you create a new project based
-on this template you get a project targeting **.NET Framework 4.0**. Because we make 
-extensive use of [async and await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) 
-we need to change this to **.NET Framework 4.5**. Right-click the project and select **Properties**. 
-Open **Application** in the section list and set **Target framework** to **.NET Framework 4.5**.
+on this template you get a project targeting **.NET Framework 4.0**.  Do **NOT** change the **Target framework** to **.NET Framework 4.5** or higher, because in that case your extension will not be compliant with WebMatrix 2 and 3.
 
 In the WebMatrix Extension project you get a file **WebMatrixExtensions.cs**. This file contains
 the skeleton for the implementation of the extension. In this file add the additional reference:
@@ -197,7 +197,7 @@ namespace MyLittleWebMatrixExtension
         {
             string scriptDoIt = Path.Combine(_webMatrixHost.WebSite.Path, 
             	@"WebMatrixTests\DoIt.bat");
-            await _executer.RunAsync("cmd.exe", "/c \"" + scriptDoIt + "\"");
+           Task.Factory.StartNew(() => _executer.RunAsync("cmd.exe", "/c \"" + scriptDoIt + "\""));
         }	    
     }
 }
@@ -230,17 +230,23 @@ namespace DesignFactory.WebMatrix.IExecuter
 {
     public interface IExecuter
     {
-        System.Threading.Tasks.Task<bool> RunAsync(string fileName, 
-                                                   string arguments);
-        System.Threading.Tasks.Task<bool> RunPowerShellAsync(string arguments);
+        CancellationTokenSource GetCancellationTokenSource();
+        CancellationToken GetCancellationToken();
+        bool Start(Action cancelAction = null);
+        bool End();
         bool IsRunning();
         void Cancel();
+        System.Threading.Tasks.Task<bool> RunAsync(string fileName, string arguments);
+        System.Threading.Tasks.Task<bool> RunPowerShellAsync(string arguments);
         void Write(string format, params object[] args);
         void WriteLine(string format, params object[] args);
-
+        void WriteNoParse(string format, params object[] args);
+        void WriteLineNoParse(string format, params object[] args);
+        void ConfigureParsing(Regex[] ignoreList, Func<string, string> processLineBeforeParsing);
+        System.Windows.Threading.Dispatcher UIThreadDispatcher { get; }
+ 
         // Only used by DesignFactory.WebMatrix.ExecuterFactory.GetExecuter()
-        void Initialize(string tasksource, IWebMatrixHost webMatrixHost, 
-                        IEditorTaskPanelService editorTaskPanelService);
+        void Initialize(string tasksource, IWebMatrixHost webMatrixHost, IEditorTaskPanelService editorTaskPanelService);
         void InitializeTabs();
     }
 }
@@ -256,7 +262,7 @@ Example:
 ```cs
 string scriptDoIt = Path.Combine(_webMatrixHost.WebSite.Path, 
                                  @"WebMatrixTests\DoIt.bat");
-var ok = await _executer.RunAsync("cmd.exe", "/c \"" + scriptDoIt + "\"");
+var ok = Task.Factory.StartNew(() => _executer.RunAsync("cmd.exe", "/c \"" + scriptDoIt + "\""));
 ```
 
 `RunPowerShellAsync`: Execute a powershell command (in the arguments) in a
@@ -364,4 +370,4 @@ For more information on MSBuild compliant messages see [http://blogs.msdn.com/b/
 
 This section describes some random tips on working with **WebMatrix.Executer**.
 
-1. To improve debugging speed, remove all extensions you don't neat now.
+1. To improve debugging speed, remove all extensions you don't need now.
