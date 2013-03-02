@@ -11,54 +11,93 @@ namespace DesignFactory.WebMatrix.Executer
 {
     public class Executer : DesignFactory.WebMatrix.IExecuter.IExecuter
     {
-        private bool _inSequence = false;   // are we in a sequence of Stat(); ...; result = End(); 
+        private bool _inSequence = false;   // are we in a sequence of Start(); ...; result = End(); 
         private string _tasksource;
+        private IWebMatrixHost _webMatrixHost;
         private bool _isCanceled;
         private Regex[] _ignoreList = null;
         private Func<string, string> _processLineBeforeParsing = null;
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        public void ReinitializeCancellationTokenSource()
+        {
+            _cancellationTokenSource = new CancellationTokenSource();
+        }
+
+        public CancellationTokenSource GetCancellationTokenSource()
+        {
+            return _cancellationTokenSource;
+        }
+
+        public CancellationToken GetCancellationToken()
+        {
+            return _cancellationTokenSource.Token;
+        }
 
         // Start the sequence
-        public void Start(Action cancelAction)
+        public bool Start(Action cancelAction = null)
         {
-            _inSequence = true;
             InitializeTabs();
             ShowOutputPaneAndClearTaskListPane();
-
-            if (cancelAction != null)
+            if (IsRunning())
             {
-                // Make the cancel button active
-                WebMatrixContext.OutputPaneInstance.ProcessCancelButton.IsEnabled = true;
+                this.UIThreadDispatcher.Invoke(new Action(() =>
+                {
+                     WriteLineNoParse("There is already a '{0}' action running.", _tasksource);
+                }));
+                return false; // can't start
             }
 
-            WebMatrixContext.SetCancelAction(cancelAction);
+            _inSequence = true;
+            _isCanceled = false;
+
+            ReinitializeCancellationTokenSource();
+
+            // Make the cancel button active
+            this.UIThreadDispatcher.Invoke(new Action(() =>
+            {
+                WebMatrixContext.OutputPaneInstance.ProcessCancelButton.IsEnabled = true;
+            }));
+
+            WebMatrixContext.SetCancelAction(new Action(() =>
+                {
+                    _cancellationTokenSource.Cancel();  // cancel any async tasks started with cancellation token
+                    if (cancelAction != null)           // execute the user defined cancellation action
+                    {
+                        cancelAction();
+                    }
+                    _isCanceled = true;
+                }));
+
+            return true; // can start!
         }
 
         /// <summary>
         /// We are done with the sequence. 
         /// </summary>
-        /// <param name="isCanceled">The sequence is cancelled.</param>
         /// <returns>True if successful (no errors); false otherwise.</returns>
-        public bool End(bool isCanceled)
+        public bool End()
         {
-            bool success = true; // assume success!
-
-            // Make the cancel button inactive, no more process running
-            WebMatrixContext.OutputPaneInstance.ProcessCancelButton.IsEnabled = false;
-
-            if (isCanceled)
-            {
-                WriteLineNoParse(WebMatrixContext.TaskListPaneInstance.GetTaskListReport(_tasksource, canceled: true));
-                success = false;
-            }
-            else
-            {
-                WriteLine(WebMatrixContext.TaskListPaneInstance.GetTaskListReport(_tasksource, canceled: false));
-                success = !WebMatrixContext.TaskListPaneInstance.HasErrors(_tasksource);
-                if (!success)
+            string taskListReport = WebMatrixContext.TaskListPaneInstance.GetTaskListReport(_tasksource, canceled: _isCanceled);
+            bool success = !WebMatrixContext.TaskListPaneInstance.HasErrors(_tasksource);
+            
+            this.UIThreadDispatcher.Invoke(new Action(() =>
                 {
-                    WebMatrixContext.TaskListPaneInstance.Show(_tasksource);
-                }
-            }
+                    WriteLineNoParse(taskListReport);
+                    // Make the cancel button inactive, no more process running
+                    WebMatrixContext.OutputPaneInstance.ProcessCancelButton.IsEnabled = false;
+                    if (!success && !_isCanceled)
+                    {
+                        this.UIThreadDispatcher.Invoke(new Action(() => WebMatrixContext.TaskListPaneInstance.Show(_tasksource)));
+                    }
+
+                    // refresh the tree
+                    var refresh = _webMatrixHost.HostCommands.GetCommand(Microsoft.WebMatrix.Extensibility.CommonCommandIds.GroupId, (int)Microsoft.WebMatrix.Extensibility.CommonCommandIds.Ids.Refresh);
+                    if (refresh.CanExecute(null))
+                    {
+                        refresh.Execute(null);
+                    }
+                }));
 
             _inSequence = false;
 
@@ -67,10 +106,10 @@ namespace DesignFactory.WebMatrix.Executer
 
         public void Write(string format, params object[] args)
         {
-            if (!_inSequence)
-            {
-                throw new ApplicationException("Write() and WriteLine() can only be executed within a sequence starting with Executer.Start(), ending with Executer.End(bool isCanceled).");
-            }
+            //if (!_inSequence)
+            //{
+            //    throw new ApplicationException("Write() and WriteLine() can only be executed within a sequence starting with Executer.Start(), ending with Executer.End(bool isCanceled).");
+            //}
 
             string output;
 
@@ -84,7 +123,11 @@ namespace DesignFactory.WebMatrix.Executer
             {
                 output =  String.Format(format, args);
             }
-            WebMatrixContext.OutputPaneInstance.Write(_tasksource, output);
+
+            this.UIThreadDispatcher.Invoke(new Action(() =>
+                {
+                    WebMatrixContext.OutputPaneInstance.Write(_tasksource, output);
+                }));
 
             if (_processLineBeforeParsing != null)
             {
@@ -103,10 +146,10 @@ namespace DesignFactory.WebMatrix.Executer
 
         public void WriteNoParse(string format, params object[] args)
         {
-            if (!_inSequence)
-            {
-                throw new ApplicationException("WriteNoParse() and WriteLineNoParse() can only be executed within a sequence starting with Executer.Start(), ending with Executer.End(bool isCanceled).");
-            }
+            //if (!_inSequence)
+            //{
+            //    throw new ApplicationException("WriteNoParse() and WriteLineNoParse() can only be executed within a sequence starting with Executer.Start(), ending with Executer.End().");
+            //}
 
             string output;
 
@@ -140,7 +183,7 @@ namespace DesignFactory.WebMatrix.Executer
         /// </summary>
         /// <param name="arguments">Arguments to pass to the PowerShell application.</param>
         /// <returns>True if successful, false otherwise.</returns>
-        public async Task<bool> RunPowerShellAsync(string arguments)
+        public Task<bool> RunPowerShellAsync(string arguments)
         {
             var powershellExe = Path.Combine(Environment.SystemDirectory, @"WindowsPowerShell\v1.0\powershell.exe");
             var powershellOSExe = Path.Combine(Path.GetTempPath(), "PowerShellOS.exe");
@@ -153,12 +196,11 @@ namespace DesignFactory.WebMatrix.Executer
                         powershellExe);
                 }
             }
-            return await RunAsync(powershellOSExe, arguments);
+            return RunAsync(powershellOSExe, arguments);
         }
 
-        public async Task<bool> RunAsync(string fileName, string arguments)
+        public Task<bool> RunAsync(string fileName, string arguments)
         {
-            bool success;
             bool miniSequence = false;  // set to true if we are running within our own sequence, no Start() was called, we do it ourselves.
 
             if (!File.Exists(fileName))
@@ -171,59 +213,61 @@ namespace DesignFactory.WebMatrix.Executer
                 throw new ApplicationException(String.Format("Another task is currently running for '{0}'. Please try again later.", _tasksource));
             }
 
-            if (!_inSequence)
-            {
-                miniSequence = true;
-                Start(() =>
-                {
-                    WebMatrixContext.OutputPaneInstance.CancelExecutingTask(_tasksource);
-                });
-            }
-
             // specify that the executing task is not canceled
-            _isCanceled = false;
+            //_isCanceled = false;
 
-            // prep process   
-            ProcessStartInfo psi = new ProcessStartInfo(fileName, arguments);
-            psi.UseShellExecute = false;
-            psi.RedirectStandardOutput = true;
-            psi.RedirectStandardError = true;
-            psi.CreateNoWindow = true;
+            WriteLine("Executing: {0} {1}", fileName, arguments);
 
-            using (Process process = new Process())
-            {
-                // pass process data     
-                process.StartInfo = psi;
-                // prep for multithreaded logging     
-                ProcessOutputHandler outputHandler = new ProcessOutputHandler(_tasksource, this, process);
-
-                TaskSourceOutput tso = WebMatrixContext.OutputPaneInstance.EnsureTaskSourceOutputForExecutingTask(_tasksource, process, executer:this);
-
-                WriteLine("Executing: {0} {1}", fileName, arguments);
-
-                await Task.Run(() =>
+            Task<bool> mainTask = Task.Factory.StartNew(() =>
                 {
-                    // start process and stream readers, stream readers out-killed when task completes running  
-                    process.Start();
-                    Task.Run(() => { outputHandler.ReadStdOut(); });
-                    Task.Run(() => { outputHandler.ReadStdErr(); });
-                    // wait for process to complete     
-                    process.WaitForExit();
-                });
+                    bool success;
 
-                // Process is done executing, disconnect process and executer information from output pane
-                tso.ExecutingProcess = null;
-                tso.ProcessExecuter = null;
+                    if (!_inSequence)
+                    {
+                        miniSequence = true;
+                        Start(() =>
+                        {
+                            WebMatrixContext.OutputPaneInstance.CancelExecutingTask(_tasksource);
+                        });
+                    }
 
-                success = process.ExitCode == 0;
-            }
+                    // prep process   
+                    ProcessStartInfo psi = new ProcessStartInfo(fileName, arguments);
+                    psi.UseShellExecute = false;
+                    psi.RedirectStandardOutput = true;
+                    psi.RedirectStandardError = true;
+                    psi.CreateNoWindow = true;
 
-            if (miniSequence)
-            {
-                success = End(_isCanceled);
-            }
-        
-            return success;
+                    using (var process = new Process())
+                    {
+                        // pass process data     
+                        process.StartInfo = psi;
+                        // prep for multithreaded logging     
+                        var outputHandler = new ProcessOutputHandler(_tasksource, this, process);
+
+                        TaskSourceOutput tso = WebMatrixContext.OutputPaneInstance.EnsureTaskSourceOutputForExecutingTask(_tasksource, process, executer: this);
+                        // start process and stream readers, stream readers out-killed when task completes running  
+                        process.Start();
+                        Task stderrTask = Task.Factory.StartNew(() => { outputHandler.ReadStdOut(); });
+                        Task stdoutTask = Task.Factory.StartNew(() => { outputHandler.ReadStdErr(); });
+                        // wait for process to complete     
+                        process.WaitForExit();
+                        // Process is done executing, disconnect process and executer information from output pane
+                        tso.ExecutingProcess = null;
+                        tso.ProcessExecuter = null;
+
+                        success = process.ExitCode == 0;
+                    }
+
+                    if (miniSequence)
+                    {
+                        success = End();
+                    }
+
+                    return success;
+                }, GetCancellationToken());
+
+            return mainTask;
         }
 
         /// <summary>
@@ -262,6 +306,7 @@ namespace DesignFactory.WebMatrix.Executer
         public void Initialize(string tasksource, IWebMatrixHost webMatrixHost, IEditorTaskPanelService editorTaskPanelService)
         {
             _tasksource = tasksource;
+            _webMatrixHost = webMatrixHost;
             DesignFactory.WebMatrix.Executer.WebMatrixContext.Initialize(webMatrixHost, editorTaskPanelService);
         }
 

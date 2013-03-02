@@ -9,11 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DesignFactory.WebMatrix.Executer</RootNamespace>
     <AssemblyName>DesignFactory.WebMatrix.Executer</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -123,6 +123,10 @@
     <Resource Include="Images\help.gif" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DesignFactory.WebMatrix.ExecuterFactory\DesignFactory.WebMatrix.ExecuterFactory.csproj">
+      <Project>{4ac3462a-18a8-4507-b02c-979f3a694a9b}</Project>
+      <Name>DesignFactory.WebMatrix.ExecuterFactory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DesignFactory.WebMatrix.IExecuter\DesignFactory.WebMatrix.IExecuter.csproj">
       <Project>{32a3b468-e961-4276-a301-4e5c0ffbade9}</Project>
       <Name>DesignFactory.WebMatrix.IExecuter</Name>

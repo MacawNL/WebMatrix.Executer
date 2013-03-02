@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>WebMatrix.Executer</id>
-    <version>1.4.0.0</version>
+    <version>1.5.0.0</version>
     <authors>Serge van den Oever [Macaw]</authors>
 	  <owners>Serge van den Oever [Macaw]</owners>
     <description>
@@ -13,7 +13,7 @@
       with just a few lines of code.
     </description>
     <summary>
-       Simply create WebMatrix 2 extensions that execute commands, capture output and parse for errors and warnings.
+       Simply create WebMatrix 2 or 3 extensions that execute commands, capture output and parse for errors and warnings.
     </summary>
 	  <licenseUrl>http://macawnl.github.com/WebMatrix.Executer/</licenseUrl>
 	  <projectUrl>http://macawnl.github.com/WebMatrix.Executer/</projectUrl>

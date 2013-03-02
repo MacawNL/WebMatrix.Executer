@@ -109,7 +109,7 @@ namespace DesignFactory.WebMatrix.Executer
         /// <summary>
         /// If filename is relative, make path absolute if it was relative to workspace and exists.
         /// </summary>
-        /// <param name="filename">The possiblt relative filename.</param>
+        /// <param name="filename">The possible relative filename.</param>
         /// <returns>The absolute path, if filename relative to workspace, otherwise original path.</returns>
         public string MakeWorkspaceRelativeFilenameAbsoluteIfPossible(string filename)
         {

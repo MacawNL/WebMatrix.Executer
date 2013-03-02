@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Microsoft.WebMatrix.Extensibility;
 using Microsoft.WebMatrix.Extensibility.Editor;
 
@@ -12,12 +13,14 @@ namespace DesignFactory.WebMatrix.IExecuter
     [Guid("CCC20030-7F9E-4778-8E7D-E400DBC3661A")]
     public interface IExecuter
     {
-        void Start(Action cancelAction);
-        bool End(bool isCanceled);
-        System.Threading.Tasks.Task<bool> RunAsync(string fileName, string arguments);
-        System.Threading.Tasks.Task<bool> RunPowerShellAsync(string arguments);
+        CancellationTokenSource GetCancellationTokenSource();
+        CancellationToken GetCancellationToken();
+        bool Start(Action cancelAction = null);
+        bool End();
         bool IsRunning();
         void Cancel();
+        System.Threading.Tasks.Task<bool> RunAsync(string fileName, string arguments);
+        System.Threading.Tasks.Task<bool> RunPowerShellAsync(string arguments);
         void Write(string format, params object[] args);
         void WriteLine(string format, params object[] args);
         void WriteNoParse(string format, params object[] args);

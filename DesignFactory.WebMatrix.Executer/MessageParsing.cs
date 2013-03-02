@@ -208,9 +208,9 @@ namespace DesignFactory.WebMatrix.Executer
             string[] left, right;
 
             origin = origin.Trim();
-            if (origin.IndexOf('(') != -1)
+            if (origin.LastIndexOf('(') != -1)
             {
-                lParen = origin.IndexOf('(');
+                lParen = origin.LastIndexOf('(');
                 filename = origin.Substring(0, lParen).Trim();
                 temp = origin.Substring(lParen + 1, origin.Length - lParen - 2).Split(',');
                 if (temp.Length == 1)
